@@ -5,7 +5,7 @@ FROM openjdk:21-jdk-slim
 WORKDIR /app
 
 # Копируем собранный JAR файл в контейнер
-COPY target/main-service.jar /app/main-service.jar
+COPY target/main-service*.jar /app/ewm-service.jar
 
 # Указываем команду для запуска приложения
-CMD ["java", "-jar", "/app/main-service.jar"]
+CMD ["java", "-jar", "/app/ewm-service.jar"]
