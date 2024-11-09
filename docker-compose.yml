@@ -1,7 +1,12 @@
 services:
   stats-server:
+    build:
+      context: ./stat/stat-server/Dockerfile
+      dockerfile: Dockerfile
     ports:
       - "9090:9090"
+    depends_on:
+      - stats-db  # Зависимость от базы данных
 
   stats-db:
     image: postgres:16.1
