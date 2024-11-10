@@ -16,7 +16,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=statsuser
       - SPRING_DATASOURCE_PASSWORD=statspass
     networks:
-      - stats-network
+      - ewm-network
 
   stats-db:
     image: postgres:16.1
@@ -26,14 +26,14 @@ services:
     environment:
       - POSTGRES_PASSWORD=statspass
       - POSTGRES_USER=statsuser
-      - POSTGRES_DB=statsdb
+      - POSTGRES_DB=statsdb  # Ensure correct database name
     healthcheck:
-      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      test: [ "CMD", "pg_isready", "-U", "statsuser", "-d", "statsdb" ]  # Fix healthcheck to use 'statsdb'
+      interval: 10s
       timeout: 5s
-      interval: 5s
-      retries: 10
+      retries: 5
     networks:
-      - stats-network
+      - ewm-network
 
   ewm-service:
     build:
@@ -70,7 +70,5 @@ services:
       - ewm-network
 
 networks:
-  stats-network:
-    driver: bridge
   ewm-network:
     driver: bridge

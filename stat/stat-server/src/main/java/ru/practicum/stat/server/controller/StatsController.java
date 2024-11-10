@@ -1,4 +1,4 @@
-package ru.practicum.stat.server;
+package ru.practicum.stat.server.controller;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.stat.dto.EndpointHit;
 import ru.practicum.stat.dto.ViewStats;
+import ru.practicum.stat.server.model.EndpointHitEntity;
+import ru.practicum.stat.server.service.StatsService;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,7 +37,7 @@ public class StatsController {
 
     @PostMapping("/hit")
     @ResponseStatus(HttpStatus.CREATED)
-    public void hit(@RequestBody @Valid EndpointHit hit) {
-        statsService.hit(hit);
+    public EndpointHitEntity hit(@RequestBody @Valid EndpointHitEntity hit) {
+        return statsService.hit(hit);
     }
 }

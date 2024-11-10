@@ -1,4 +1,4 @@
-package ru.practicum.stat.server;
+package ru.practicum.stat.server.controller;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -13,8 +13,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.stat.dto.EndpointHit;
 import ru.practicum.stat.dto.ViewStats;
+import ru.practicum.stat.server.model.EndpointHitEntity;
+import ru.practicum.stat.server.service.StatsService;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -31,10 +32,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class StatsControllerTest {
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
     @Autowired
     private MockMvc mockMvc;
+
     @Autowired
     private ObjectMapper objectMapper;
+
     @MockBean
     private StatsService statsService;
 
@@ -43,7 +47,6 @@ public class StatsControllerTest {
         LocalDateTime start = LocalDateTime.now().minusDays(2);
         LocalDateTime end = LocalDateTime.now().minusDays(1);
 
-        // Подготавливаем список ViewStats как моковый ответ
         ViewStats viewStats = new ViewStats();
         viewStats.setApp("testApp");
         viewStats.setUri("/test");
@@ -72,7 +75,6 @@ public class StatsControllerTest {
                 endCaptor.getValue().truncatedTo(java.time.temporal.ChronoUnit.SECONDS));
     }
 
-
     @Test
     public void givenInvalidParams_whenGetStats_shouldReturnBadRequest() throws Exception {
         LocalDateTime futureStart = LocalDateTime.now().plusDays(1);
@@ -87,13 +89,13 @@ public class StatsControllerTest {
 
     @Test
     public void givenValidHit_whenPostHit_shouldReturnCreated() throws Exception {
-        EndpointHit validHit = new EndpointHit();
+        EndpointHitEntity validHit = new EndpointHitEntity();
         validHit.setApp("testApp");
         validHit.setUri("/test");
         validHit.setIp("127.0.0.1");
         validHit.setTimestamp(LocalDateTime.now());
 
-        doNothing().when(statsService).hit(validHit);
+        when(statsService.hit(any(EndpointHitEntity.class))).thenReturn(validHit);
 
         mockMvc.perform(post("/hit")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -101,9 +103,10 @@ public class StatsControllerTest {
                 .andExpect(status().isCreated());
     }
 
+
     @Test
     public void givenInvalidHit_whenPostHit_shouldReturnBadRequest() throws Exception {
-        EndpointHit invalidHit = new EndpointHit();
+        EndpointHitEntity invalidHit = new EndpointHitEntity();
 
         mockMvc.perform(post("/hit")
                         .contentType(MediaType.APPLICATION_JSON)
