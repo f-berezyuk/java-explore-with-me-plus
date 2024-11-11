@@ -86,7 +86,7 @@ public class StatsControllerTest {
         validHit.setIp("127.0.0.1");
         validHit.setTimestamp(LocalDateTime.now());
 
-        when(statsService.hit(any(EndpointHit.class))).thenReturn(validHit);
+        when(statsService.saveHit(any(EndpointHit.class))).thenReturn(validHit);
 
         mockMvc.perform(post("/hit").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(validHit))).andExpect(status().isCreated());
     }
