@@ -49,6 +49,6 @@ public class StatsServiceImpl implements StatsService {
 
     @Override
     public EndpointHit saveHit(EndpointHit endpointHit) {
-        return mapper.toDto(repository.save(mapper.toEntity(endpointHit)));
+        return mapper.INSTANCE.toDto(repository.save(mapper.INSTANCE.toEntity(endpointHit)));
     }
 }
