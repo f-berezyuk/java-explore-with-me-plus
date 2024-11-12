@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.stat.dto.EndpointHit;
 import ru.practicum.stat.dto.ViewStats;
-import ru.practicum.stat.dto.utils.DateTimeUtil;
+import ru.practicum.stat.utils.DateTimeUtil;
 import ru.practicum.stat.server.service.StatsService;
 
 import java.net.URLDecoder;
