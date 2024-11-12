@@ -59,15 +59,18 @@ public class StatsControllerTest {
         String startEncoded = start.format(DATE_TIME_FORMATTER);
         String endEncoded = end.format(DATE_TIME_FORMATTER);
 
-        mockMvc.perform(get("/stats").param("start", startEncoded).param("end", endEncoded).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+        mockMvc.perform(get("/stats").param("start", startEncoded).param("end", endEncoded)
+                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 
         ArgumentCaptor<LocalDateTime> startCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
         ArgumentCaptor<LocalDateTime> endCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
 
         verify(statsService).getStats(startCaptor.capture(), endCaptor.capture(), any(), anyBoolean());
 
-        assertEquals(start.truncatedTo(java.time.temporal.ChronoUnit.SECONDS), startCaptor.getValue().truncatedTo(java.time.temporal.ChronoUnit.SECONDS));
-        assertEquals(end.truncatedTo(java.time.temporal.ChronoUnit.SECONDS), endCaptor.getValue().truncatedTo(java.time.temporal.ChronoUnit.SECONDS));
+        assertEquals(start.truncatedTo(java.time.temporal.ChronoUnit.SECONDS), startCaptor.getValue().truncatedTo(java
+                .time.temporal.ChronoUnit.SECONDS));
+        assertEquals(end.truncatedTo(java.time.temporal.ChronoUnit.SECONDS), endCaptor.getValue().truncatedTo(java.time
+                .temporal.ChronoUnit.SECONDS));
     }
 
     @Test
@@ -75,7 +78,9 @@ public class StatsControllerTest {
         LocalDateTime futureStart = LocalDateTime.now().plusDays(1);
         LocalDateTime now = LocalDateTime.now();
 
-        mockMvc.perform(get("/stats").param("start", futureStart.format(DATE_TIME_FORMATTER)).param("end", now.format(DATE_TIME_FORMATTER)).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+        mockMvc.perform(get("/stats").param("startTime", futureStart.format(DATE_TIME_FORMATTER))
+                        .param("end", now.format(DATE_TIME_FORMATTER)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -86,9 +91,10 @@ public class StatsControllerTest {
         validHit.setIp("127.0.0.1");
         validHit.setTimestamp(LocalDateTime.now());
 
-        when(statsService.hit(any(EndpointHit.class))).thenReturn(validHit);
+        when(statsService.saveHit(any(EndpointHit.class))).thenReturn(validHit);
 
-        mockMvc.perform(post("/hit").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(validHit))).andExpect(status().isCreated());
+        mockMvc.perform(post("/hit").contentType(MediaType.APPLICATION_JSON).content(objectMapper
+                .writeValueAsString(validHit))).andExpect(status().isCreated());
     }
 
 
@@ -96,6 +102,7 @@ public class StatsControllerTest {
     public void givenInvalidHit_whenPostHit_shouldReturnBadRequest() throws Exception {
         EndpointHitEntity invalidHit = new EndpointHitEntity();
 
-        mockMvc.perform(post("/hit").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(invalidHit))).andExpect(status().isBadRequest());
+        mockMvc.perform(post("/hit").contentType(MediaType.APPLICATION_JSON).content(objectMapper
+                .writeValueAsString(invalidHit))).andExpect(status().isBadRequest());
     }
 }

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.stat.dto.EndpointHit;
 import ru.practicum.stat.dto.ViewStats;
+import ru.practicum.stat.server.error.ValidationException;
 import ru.practicum.stat.server.model.mapper.EndpointHitMapper;
 import ru.practicum.stat.server.repository.EndpointHitEntityRepository;
 
@@ -23,11 +24,31 @@ public class StatsServiceImpl implements StatsService {
 
     @Override
     public List<ViewStats> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
-        return List.of();
+        List<ViewStats> projections;
+
+        if (end.isBefore(start)) {
+            throw new ValidationException(String.format("End date %s is before start date %s", end, start));
+        }
+
+        if (uris != null && !uris.isEmpty()) {
+            if (unique) {
+                projections = repository.getUniqueStatsWithHitsAndUris(start, end, uris);
+            } else {
+                projections = repository.getStatsWithHitsAndUris(start, end, uris);
+            }
+        } else {
+            if (unique) {
+                projections = repository.getUniqueStatsWithHits(start, end);
+            } else {
+                projections = repository.getStatsWithHits(start, end);
+            }
+        }
+
+        return projections;
     }
 
     @Override
-    public EndpointHit hit(EndpointHit endpointHit) {
+    public EndpointHit saveHit(EndpointHit endpointHit) {
         return mapper.toDto(repository.save(mapper.toEntity(endpointHit)));
     }
 }
