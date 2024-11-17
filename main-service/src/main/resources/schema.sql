@@ -54,3 +54,17 @@ CREATE TABLE IF NOT EXISTS request (
   status VARCHAR(15) NOT NULL,
   CONSTRAINT pk_request PRIMARY KEY (id)
 );
+
+CREATE TABLE IF NOT EXISTS compilation (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    pinned BOOLEAN NOT NULL,
+    title VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS compilation_event (
+    compilation_id BIGINT NOT NULL,
+    event_id BIGINT NOT NULL,
+    PRIMARY KEY (compilation_id, event_id),
+    FOREIGN KEY (compilation_id) REFERENCES compilation(id) ON DELETE CASCADE,
+    FOREIGN KEY (event_id) REFERENCES event(id) ON DELETE CASCADE
+);
