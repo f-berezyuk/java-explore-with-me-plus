@@ -1,4 +1,4 @@
-package compilation.model;
+package ru.practicum.compilation.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ import ru.practicum.event.model.Event;
 @Table(name = "compilations")
 @Getter
 @Setter
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
 public class Compilation {

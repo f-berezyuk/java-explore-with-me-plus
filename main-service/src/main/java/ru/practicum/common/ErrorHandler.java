@@ -43,4 +43,15 @@ public class ErrorHandler {
                 e.getMessage(),
                 getStackTrace(e));
     }
+
+    @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ApiError handleNotFoundException(final Exception e) {
+        log.error("{} {}", HttpStatus.NOT_FOUND, e.getMessage(), e);
+        return new ApiError(
+                HttpStatus.NOT_FOUND,
+                "The required object was not found.",
+                e.getMessage(),
+                getStackTrace(e));
+    }
 }

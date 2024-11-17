@@ -1,4 +1,4 @@
-package compilation.dto;
+package ru.practicum.compilation.dto;
 
 import java.util.List;
 
