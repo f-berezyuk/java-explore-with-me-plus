@@ -2,9 +2,6 @@ package ru.practicum.event.mapper;
 
 import org.mapstruct.*;
 import ru.practicum.event.dto.EventShortDto;
-import ru.practicum.event.dto.NewEventDto;
-import ru.practicum.event.dto.UpdateEventAdminRequest;
-import ru.practicum.event.dto.UpdateEventUserRequest;
 import ru.practicum.event.model.Event;
 
 @Mapper(componentModel = "spring")
