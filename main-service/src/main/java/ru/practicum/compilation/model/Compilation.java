@@ -35,9 +35,9 @@ public class Compilation {
             joinColumns = @JoinColumn(name = "compilation_id"),
             inverseJoinColumns = @JoinColumn(name = "event_id")
     )
+    @Builder.Default
     private List<Event> events = new ArrayList<>();
 
     private Boolean pinned;
     private String title;
 }
-

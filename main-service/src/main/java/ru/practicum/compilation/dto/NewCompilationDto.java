@@ -17,6 +17,7 @@ import org.springframework.lang.Nullable;
 public class NewCompilationDto {
     @Nullable
     private List<Long> events;
+    @Builder.Default
     private Boolean pinned = false;
     @NotBlank
     @Length(min = 1, max = 50)
