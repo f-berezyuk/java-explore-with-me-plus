@@ -54,4 +54,16 @@ public class ErrorHandler {
                 e.getMessage(),
                 getStackTrace(e));
     }
+
+
+    @ExceptionHandler(ConflictException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiError handleConflictException(final Exception e) {
+        log.error("{} {}", HttpStatus.CONFLICT, e.getMessage(), e);
+        return new ApiError(
+                HttpStatus.CONFLICT,
+                "Integrity constraint has been violated.",
+                e.getMessage(),
+                getStackTrace(e));
+    }
 }
