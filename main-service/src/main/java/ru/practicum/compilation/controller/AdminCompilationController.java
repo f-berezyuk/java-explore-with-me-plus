@@ -1,4 +1,4 @@
-package ru.practicum.admin.compilation;
+package ru.practicum.compilation.controller;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.compilation.CompilationService;
 import ru.practicum.compilation.dto.CompilationDto;
 import ru.practicum.compilation.dto.NewCompilationDto;
 import ru.practicum.compilation.dto.UpdateCompilationRequest;
+import ru.practicum.compilation.service.CompilationService;
 
 @RestController
 @RequestMapping("/admin/compilations")
@@ -29,13 +29,13 @@ public class AdminCompilationController {
         return compilationService.addNewCompilation(newCompilationDto);
     }
 
-    @DeleteMapping("/{compId}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCompilation(@PathVariable Long id) {
         compilationService.delete(id);
     }
 
-    @PatchMapping("/{compId}")
+    @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public CompilationDto updateCompilation(@PathVariable Long id, @RequestBody UpdateCompilationRequest request) throws BadRequestException {
         return compilationService.update(id, request);

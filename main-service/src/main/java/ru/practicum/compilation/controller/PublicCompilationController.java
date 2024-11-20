@@ -1,4 +1,4 @@
-package ru.practicum._public.compilation;
+package ru.practicum.compilation.controller;
 
 import java.util.List;
 
@@ -8,13 +8,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.compilation.CompilationService;
 import ru.practicum.compilation.dto.CompilationDto;
+import ru.practicum.compilation.service.CompilationService;
 
 @RestController
 @RequestMapping("/compilations")
 @AllArgsConstructor
-public class CompilationController {
+public class PublicCompilationController {
     private final CompilationService compilationService;
 
     @GetMapping
@@ -24,7 +24,7 @@ public class CompilationController {
         return compilationService.getAll(pinned, from, size);
     }
 
-    @GetMapping("/{compId}")
+    @GetMapping("/{id}")
     public CompilationDto getCompilation(@PathVariable Long id) {
         return compilationService.get(id);
     }
