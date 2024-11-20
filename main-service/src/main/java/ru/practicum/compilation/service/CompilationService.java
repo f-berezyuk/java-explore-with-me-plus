@@ -1,4 +1,4 @@
-package ru.practicum.compilation;
+package ru.practicum.compilation.service;
 
 import java.util.List;
 

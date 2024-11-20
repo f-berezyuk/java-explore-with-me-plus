@@ -1,4 +1,4 @@
-package ru.practicum.compilation;
+package ru.practicum.compilation.service;
 
 import java.util.Collections;
 import java.util.List;
@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.common.NotFoundException;
+import ru.practicum.compilation.repository.CompilationsRepository;
 import ru.practicum.compilation.dto.CompilationDto;
 import ru.practicum.compilation.dto.NewCompilationDto;
 import ru.practicum.compilation.dto.UpdateCompilationRequest;
