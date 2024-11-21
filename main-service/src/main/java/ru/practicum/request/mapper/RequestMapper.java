@@ -15,4 +15,10 @@ public interface RequestMapper {
     RequestDto toDto(Request request);
 
     List<RequestDto> toDtos(List<Request> requests);
+
+    @Mapping(target = "event.id", source = "event")
+    @Mapping(target = "requester.id", source = "requester")
+    Request toEntity(RequestDto requestDto);
+
+    List<Request> toEntities(List<RequestDto> requestDtos);
 }

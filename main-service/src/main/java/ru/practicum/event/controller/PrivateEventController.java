@@ -21,7 +21,7 @@ import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.event.dto.UpdateEventUserRequest;
 import ru.practicum.event.service.EventService;
-import ru.practicum.request.model.Request;
+import ru.practicum.request.dto.RequestDto;
 
 @RestController
 @RequestMapping("/users/{userId}/events")
@@ -43,11 +43,11 @@ public class PrivateEventController {
     }
 
     @GetMapping("/{eventId}")
-    public EventFullDto addEvent(@PathVariable Long userId, @PathVariable Long eventId) {
+    public EventFullDto getEvent(@PathVariable Long userId, @PathVariable Long eventId) {
         return eventService.getEvent(userId, eventId);
     }
 
-    @GetMapping("/{eventId}")
+    @PatchMapping("/{eventId}")
     public EventFullDto updateEvent(@PathVariable Long userId,
                                     @PathVariable Long eventId,
                                     @RequestBody @Valid UpdateEventUserRequest request) {
@@ -55,11 +55,11 @@ public class PrivateEventController {
     }
 
     @GetMapping("/{eventId}/requests")
-    public List<Request> getRequests(@PathVariable Long userId, @PathVariable Long eventId) {
+    public List<RequestDto> getRequests(@PathVariable Long userId, @PathVariable Long eventId) {
         return eventService.getRequests(userId, eventId);
     }
 
-    @PatchMapping("/{eventId}")
+    @PatchMapping("/{eventId}/requests")
     public EventRequestStatusUpdateResult updateRequests(@PathVariable Long userId,
                                                          @PathVariable Long eventId,
                                                          @RequestBody @Valid EventRequestStatusUpdateRequest request) {

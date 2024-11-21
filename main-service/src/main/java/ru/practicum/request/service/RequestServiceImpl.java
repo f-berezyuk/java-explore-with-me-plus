@@ -18,6 +18,7 @@ import ru.practicum.user.repository.UserRepository;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -55,7 +56,7 @@ public class RequestServiceImpl implements RequestService {
             throw new ConflictException("Participant limit exceeded");
         }
 
-        Request eventRequest = new Request(null, LocalDateTime.now(), event, user,  RequestStatus.PENDING);
+        Request eventRequest = new Request(null, LocalDateTime.now(), event, user, RequestStatus.PENDING);
         if (!event.isRequestModeration()) {
             eventRequest.setStatus(RequestStatus.CONFIRMED);
         }
@@ -69,21 +70,57 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public RequestDto cancelRequest(long userId, long requestId) {
-        Request request = requestRepository.findByIdAndRequesterId(requestId, userId).orElseThrow(() ->
-                new NotFoundException(MessageFormat.format("Request with id={0} was not found", requestId)));
+        Request request = requestRepository.findByIdAndRequesterId(requestId, userId).orElseThrow(() -> new NotFoundException(MessageFormat.format("Request with id={0} was not found", requestId)));
         request.setStatus(RequestStatus.CANCELED);
         return requestMapper.toDto(requestRepository.save(request));
     }
 
     private User findUserById(long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(MessageFormat.format("User with id={0} was not found",
-                        userId)));
+        return userRepository.findById(userId).orElseThrow(() -> new NotFoundException(MessageFormat.format("User with id={0} was not found", userId)));
     }
 
     private Event findEventById(long eventId) {
-        return eventRepository.findById(eventId)
-                .orElseThrow(() -> new NotFoundException(MessageFormat.format("Event with id={0} was not found",
-                        eventId)));
+        return eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException(MessageFormat.format("Event with id={0} was not found", eventId)));
+    }
+
+    @Override
+    public List<RequestDto> getRequests(long userId, long eventId) {
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Event not found"));
+
+        if (!event.getUser().getId().equals(userId)) {
+            throw new NotFoundException("User is not the owner of the event");
+        }
+
+        List<Request> requests = requestRepository.findAllByEventId(eventId);
+
+        return requests.stream().map(requestMapper::toDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<RequestDto> getRequestsByUserIdAndEventIdAndRequestIds(long userId, long eventId, List<Long> requestIds) {
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Event not found"));
+
+        if (!event.getUser().getId().equals(userId)) {
+            throw new NotFoundException("User is not the owner of the event");
+        }
+
+        List<Request> requests = requestRepository.findAllById(requestIds);
+
+        for (Request request : requests) {
+            if (!request.getEvent().getId().equals(eventId)) {
+                throw new NotFoundException("Request does not belong to the specified event");
+            }
+        }
+
+        return requests.stream().map(requestMapper::toDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<RequestDto> saveAll(List<RequestDto> requests) {
+        List<Request> requestEntities = requests.stream().map(requestMapper::toEntity).collect(Collectors.toList());
+
+        List<Request> savedRequests = requestRepository.saveAll(requestEntities);
+
+        return savedRequests.stream().map(requestMapper::toDto).collect(Collectors.toList());
     }
 }
