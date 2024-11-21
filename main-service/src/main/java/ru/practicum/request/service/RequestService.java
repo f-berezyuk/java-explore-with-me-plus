@@ -9,7 +9,7 @@ public interface RequestService {
 
     List<RequestDto> getRequests(long userId);
 
-    List<RequestDto> getRequestsByUserIdAndEventIdAndRequestIds(long userId, long eventId, List<Long> RequestIds);
+    List<RequestDto> getRequestsByUserIdAndEventIdAndRequestIds(long userId, long eventId, List<Long> requestIds);
 
     RequestDto createRequest(long userId, long eventId);
 

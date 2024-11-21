@@ -22,7 +22,6 @@ import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.event.dto.UpdateEventUserRequest;
 import ru.practicum.event.service.EventService;
 import ru.practicum.request.dto.RequestDto;
-import ru.practicum.request.model.Request;
 
 @RestController
 @RequestMapping("/users/{userId}/events")
