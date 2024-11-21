@@ -1,27 +1,18 @@
 package ru.practicum.event.model;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import ru.practicum.compilation.model.Compilation;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import ru.practicum.categories.model.Category;
+import ru.practicum.compilation.model.Compilation;
+import ru.practicum.event.model.constraint.FutureAtLeastTwoHours;
 import ru.practicum.user.model.User;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -59,6 +50,7 @@ public class Event {
     private Boolean paid;
 
     private LocalDateTime createdOn;
+    @FutureAtLeastTwoHours
     private LocalDateTime eventDate;
     private LocalDateTime publishedOn;
 

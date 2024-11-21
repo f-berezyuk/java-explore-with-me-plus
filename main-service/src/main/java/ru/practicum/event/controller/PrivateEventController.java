@@ -21,6 +21,7 @@ import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.event.dto.UpdateEventUserRequest;
 import ru.practicum.event.service.EventService;
+import ru.practicum.request.dto.RequestDto;
 import ru.practicum.request.model.Request;
 
 @RestController
@@ -55,7 +56,7 @@ public class PrivateEventController {
     }
 
     @GetMapping("/{eventId}/requests")
-    public List<Request> getRequests(@PathVariable Long userId, @PathVariable Long eventId) {
+    public List<RequestDto> getRequests(@PathVariable Long userId, @PathVariable Long eventId) {
         return eventService.getRequests(userId, eventId);
     }
 
