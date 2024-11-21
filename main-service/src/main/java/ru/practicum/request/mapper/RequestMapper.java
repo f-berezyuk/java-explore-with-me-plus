@@ -4,8 +4,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import ru.practicum.request.dto.RequestDto;
 import ru.practicum.request.model.Request;
-import ru.practicum.event.model.Event;
-import ru.practicum.user.model.User;
 
 import java.util.List;
 

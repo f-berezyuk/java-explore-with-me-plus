@@ -6,7 +6,7 @@ import ru.practicum.common.ConflictException;
 import ru.practicum.common.NotFoundException;
 import ru.practicum.event.dto.*;
 import ru.practicum.event.mapper.EventMapper;
-import ru.practicum.event.mapper.RequestMapper;
+import ru.practicum.event.mapper.ReqMapper;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.EventState;
 import ru.practicum.event.repository.EventRepository;
@@ -24,10 +24,10 @@ public class EventServiceImpl implements EventService {
     private final RequestService requestService;
     private final EventRepository eventRepository;
     private final EventMapper mapper;
-    private final RequestMapper requestMapper;
+    private final ReqMapper requestMapper;
 
     @Autowired
-    public EventServiceImpl(RequestService requestService, EventRepository eventRepository, EventMapper mapper, RequestMapper requestMapper) {
+    public EventServiceImpl(RequestService requestService, EventRepository eventRepository, EventMapper mapper, ReqMapper requestMapper) {
         this.requestService = requestService;
         this.eventRepository = eventRepository;
         this.mapper = mapper;
