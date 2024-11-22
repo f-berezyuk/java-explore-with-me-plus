@@ -47,9 +47,6 @@ CREATE TABLE IF NOT EXISTS event (
     published_on TIMESTAMP WITHOUT TIME ZONE,
     state VARCHAR(255),
     CONSTRAINT pk_event PRIMARY KEY (id),
-    CONSTRAINT uc_event_category UNIQUE (category_id),
-    CONSTRAINT uc_event_location UNIQUE (location_id),
-    CONSTRAINT uc_event_user UNIQUE (user_id),
     CONSTRAINT fk_event_on_category FOREIGN KEY (category_id) REFERENCES category (id),
     CONSTRAINT fk_event_on_location FOREIGN KEY (location_id) REFERENCES location (id),
     CONSTRAINT fk_event_on_user FOREIGN KEY (user_id) REFERENCES users (id)
