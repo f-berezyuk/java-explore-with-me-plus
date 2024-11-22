@@ -3,6 +3,7 @@ package ru.practicum.compilation.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,7 +20,7 @@ import lombok.Setter;
 import ru.practicum.event.model.Event;
 
 @Entity
-@Table(name = "compilations")
+@Table(name = "compilation")
 @Getter
 @Setter
 @Builder(toBuilder = true)
@@ -29,7 +30,7 @@ public class Compilation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "compilation_event",
             joinColumns = @JoinColumn(name = "compilation_id"),
