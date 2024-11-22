@@ -17,14 +17,14 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     @Query("select e from Event e where e.user.id = ?1")
     List<EventShortDto> findByUser_Id(Long id);
 
-    @Query("select e from Event e where e.id = ?1 and e.user.id = ?2")
-    Optional<Event> findById(Long id, Long userId);
+
+    @Query("SELECT e FROM Event e WHERE e.id = ?1 AND e.user.id = ?2")
+    Optional<Event> findByIdAndUserId(Long id, Long userId);
 
     List<Event> findAllByIdIn(List<Long> events);
 
     @Query("SELECT e FROM Event e WHERE e.state = 'PUBLISHED' " +
-            "AND (:text IS NULL OR (LOWER(e.annotation) LIKE LOWER(CONCAT('%', :text, '%')) " +
-            "OR LOWER(e.description) LIKE LOWER(CONCAT('%', :text, '%')))) " +
+            "AND (:text IS NULL OR LOWER(CONCAT(e.annotation, ' ', e.description)) LIKE LOWER(CONCAT('%', :text, '%'))) " +
             "AND (:categories IS NULL OR e.category.id IN :categories) " +
             "AND (:paid IS NULL OR e.paid = :paid) " +
             "AND (e.eventDate BETWEEN :rangeStart AND :rangeEnd) " +
@@ -54,3 +54,4 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     Optional<Event> findByIdAndUser_Id(Long eventId, Long userId);
 }
+

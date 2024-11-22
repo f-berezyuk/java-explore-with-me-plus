@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.common.NotFoundException;
 import ru.practicum.user.dto.UserDto;
 import ru.practicum.user.dto.UserRequestDto;
 import ru.practicum.user.mapper.UserMapper;
@@ -20,6 +21,13 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     private final UserRepository repository;
     private final UserMapper mapper;
+
+    @Override
+    public UserDto getUser(Long userId) {
+        log.info("getUser params: userId = {}", userId);
+        return mapper.toDto(repository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User with id " + userId + " was not found")));
+    }
 
     @Override
     public List<UserDto> getUsers(List<Long> ids, Integer from, Integer size) {
