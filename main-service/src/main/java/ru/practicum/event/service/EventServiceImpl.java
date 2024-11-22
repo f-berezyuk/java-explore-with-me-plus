@@ -20,7 +20,6 @@ import ru.practicum.request.service.RequestService;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -139,7 +138,7 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional(readOnly = true)
     public List<EventFullDto> getAllEvents(List<Long> users, List<String> states, List<Long> categories, LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size) {
-        if (rangeStart == null) rangeStart = LocalDateTime.now();
+        if (rangeStart == null) rangeStart = LocalDateTime.MIN;
         if (rangeEnd == null) rangeEnd = LocalDateTime.MAX;
 
         List<Event> events = eventRepository.findEventsForAdmin(users, states, categories, rangeStart, rangeEnd);
@@ -149,11 +148,18 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public EventFullDto updateEventByAdmin(Long eventId, UpdateEventAdminRequest request) {
-        Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Event with id " + eventId + " was not found"));
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException("Event with id " + eventId + " was not found"));
 
         validateEventStateForAdminUpdate(event, request.getStateAction());
 
+        Location location = request.getLocation();
+        if (location != null && location.getId() == null) {
+            locationRepository.save(location);
+        }
+
         mapper.updateFromAdminRequest(request, event);
+
         return mapper.toFullDto(eventRepository.save(event));
     }
 
