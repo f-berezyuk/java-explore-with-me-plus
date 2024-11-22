@@ -1,6 +1,7 @@
 package ru.practicum.event.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.common.ConflictException;
 import ru.practicum.common.NotFoundException;
@@ -23,12 +24,8 @@ public class AdminEventController {
     }
 
     @GetMapping
-    public List<EventFullDto> getEvents(@RequestParam(required = false) List<Long> users, @RequestParam(required = false) List<String> states, @RequestParam(required = false) List<Long> categories, @RequestParam(required = false) String rangeStart, @RequestParam(required = false) String rangeEnd, @RequestParam(defaultValue = "0") int from, @RequestParam(defaultValue = "10") int size) {
-
-        LocalDateTime start = rangeStart != null ? LocalDateTime.parse(rangeStart) : null;
-        LocalDateTime end = rangeEnd != null ? LocalDateTime.parse(rangeEnd) : null;
-
-        return eventService.getAllEvents(users, states, categories, start, end, from, size);
+    public List<EventFullDto> getEvents(@RequestParam(required = false) List<Long> users, @RequestParam(required = false) List<String> states, @RequestParam(required = false) List<Long> categories, @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart, @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd, @RequestParam(defaultValue = "0") int from, @RequestParam(defaultValue = "10") int size) {
+        return eventService.getAllEvents(users, states, categories, rangeStart, rangeEnd, from, size);
     }
 
     @PatchMapping("/{eventId}")
