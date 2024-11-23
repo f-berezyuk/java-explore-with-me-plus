@@ -270,7 +270,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private void assertDataValid(LocalDateTime rangeStart, LocalDateTime rangeEnd) {
-        if(rangeStart == null || rangeEnd == null) {
+        if (rangeStart == null || rangeEnd == null) {
             return;
         }
         if (rangeStart.isAfter(rangeEnd)) {
