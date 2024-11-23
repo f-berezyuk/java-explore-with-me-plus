@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.categories.service.CategoriesService;
 import ru.practicum.common.ConflictException;
 import ru.practicum.common.NotFoundException;
+import ru.practicum.common.ValidationException;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventRequestStatusUpdateRequest;
 import ru.practicum.event.dto.EventRequestStatusUpdateResult;
@@ -195,6 +196,8 @@ public class EventServiceImpl implements EventService {
                                                LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                                Boolean onlyAvailable, String sort, int from, int size,
                                                HttpServletRequest request) {
+        assertDataValid(rangeStart, rangeEnd);
+
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Event> cq = cb.createQuery(Event.class);
         Root<Event> event = cq.from(Event.class);
@@ -264,6 +267,15 @@ public class EventServiceImpl implements EventService {
         eventRepository.saveAll(resultList);
         viewService.registerAll(resultList, request);
         return resultList.stream().map(mapper::toShortDto).toList();
+    }
+
+    private void assertDataValid(LocalDateTime rangeStart, LocalDateTime rangeEnd) {
+        if(rangeStart == null || rangeEnd == null) {
+            return;
+        }
+        if (rangeStart.isAfter(rangeEnd)) {
+            throw new ValidationException("start after end.");
+        }
     }
 
     @Override
