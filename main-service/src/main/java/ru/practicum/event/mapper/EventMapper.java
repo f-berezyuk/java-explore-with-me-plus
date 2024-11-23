@@ -1,13 +1,21 @@
 package ru.practicum.event.mapper;
 
-import org.mapstruct.*;
-import ru.practicum.event.dto.*;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import ru.practicum.event.dto.EventFullDto;
+import ru.practicum.event.dto.EventShortDto;
+import ru.practicum.event.dto.NewEventDto;
+import ru.practicum.event.dto.UpdateEventAdminRequest;
+import ru.practicum.event.dto.UpdateEventUserRequest;
 import ru.practicum.event.model.Event;
 
 @Mapper(componentModel = "spring")
 public interface EventMapper {
 
-    @Mapping(target = "eventDate", expression = "java(event.getEventDate().toString())")
+    @Mapping(target = "eventDate", expression = "java(event.getEventDate())")
     EventShortDto toShortDto(Event event);
 
     @Mapping(target = "initiator", source = "user")
