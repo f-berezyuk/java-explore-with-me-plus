@@ -1,5 +1,10 @@
 package ru.practicum.request.service;
 
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.common.ConflictException;
@@ -14,11 +19,6 @@ import ru.practicum.request.model.RequestStatus;
 import ru.practicum.request.repository.RequestRepository;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
-
-import java.text.MessageFormat;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -57,7 +57,7 @@ public class RequestServiceImpl implements RequestService {
         }
 
         Request eventRequest = new Request(null, LocalDateTime.now(), event, user, RequestStatus.PENDING);
-        if (event.getState().equals(EventState.PUBLISHED)) {
+        if (!event.isRequestModeration()) {
             eventRequest.setStatus(RequestStatus.CONFIRMED);
         }
 
@@ -88,20 +88,20 @@ public class RequestServiceImpl implements RequestService {
 
     private User findUserById(long userId) {
         return userRepository.findById(userId).orElseThrow(() -> new NotFoundException(MessageFormat.format("User " +
-                        "with " +
-                        "id={0} " +
-                        "was not " +
-                        "found",
+                                                                                                            "with " +
+                                                                                                            "id={0} " +
+                                                                                                            "was not " +
+                                                                                                            "found",
                 userId)));
     }
 
     private Event findEventById(long eventId) {
         return eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException(MessageFormat.format("Event " +
-                        "with " +
-                        "id={0}" +
-                        " was " +
-                        "not " +
-                        "found",
+                                                                                                              "with " +
+                                                                                                              "id={0}" +
+                                                                                                              " was " +
+                                                                                                              "not " +
+                                                                                                              "found",
                 eventId)));
     }
 
@@ -119,8 +119,8 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public List<RequestDto> getRequestsByUserIdAndEventIdAndRequestIds(long userId, long eventId,
-                                                                       List<Long> requestIds) {
+    public List<RequestDto> getRequestsByUserIdAndEventIdAndRequestIdIn(long userId, long eventId,
+                                                                        List<Long> requestIds) {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Event not found"));
 
         if (!event.getUser().getId().equals(userId)) {
@@ -141,8 +141,15 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public List<RequestDto> saveAll(List<RequestDto> requests) {
         List<Request> requestEntities = requests.stream().map(requestMapper::toEntity).collect(Collectors.toList());
-
-        List<Request> savedRequests = requestRepository.saveAll(requestEntities);
+        Event event = eventRepository.findById(requestEntities.getFirst().getEvent().getId())
+                .orElseThrow(() -> new NotFoundException("Event not found."));
+        int currentConfirmedRequests = event.getConfirmedRequests();
+        int confirmedReq = (int) requestEntities.stream().filter(r -> r.getStatus() == RequestStatus.CONFIRMED).count();
+        int notConfirmedReq = requestEntities.size() - confirmedReq;
+        int confirmedRequests = currentConfirmedRequests + confirmedReq - notConfirmedReq;
+        event.setConfirmedRequests(confirmedRequests);
+        eventRepository.save(event);
+        List<Request> savedRequests = requestRepository.saveAllAndFlush(requestEntities);
 
         return savedRequests.stream().map(requestMapper::toDto).collect(Collectors.toList());
     }

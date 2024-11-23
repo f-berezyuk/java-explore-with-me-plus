@@ -3,13 +3,11 @@ package ru.practicum.event.dto;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Fetch;
 import org.hibernate.validator.constraints.Length;
 import ru.practicum.event.model.Location;
 import ru.practicum.event.model.constraint.FutureAtLeastTwoHours;

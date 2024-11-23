@@ -2,7 +2,6 @@ package ru.practicum.request.controller;
 
 import java.util.List;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -25,20 +24,18 @@ public class RequestController {
     private final RequestService requestService;
 
     @GetMapping
-    List<RequestDto> getRequests(@PathVariable long userId, HttpServletRequest httpServletRequest) {
+    List<RequestDto> getRequests(@PathVariable long userId) {
         return requestService.getRequests(userId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    RequestDto createRequest(@PathVariable long userId, @RequestParam long eventId,
-                             HttpServletRequest httpServletRequest) {
+    RequestDto createRequest(@PathVariable long userId, @RequestParam long eventId) {
         return requestService.createRequest(userId, eventId);
     }
 
     @PatchMapping("/{requestId}/cancel")
-    RequestDto requestCancel(@PathVariable long requestId, @PathVariable long userId,
-                             HttpServletRequest httpServletRequest) {
+    RequestDto requestCancel(@PathVariable long requestId, @PathVariable long userId) {
         return requestService.cancelRequest(userId, requestId);
     }
 }
