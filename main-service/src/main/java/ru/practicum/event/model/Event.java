@@ -15,6 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -60,7 +61,9 @@ public class Event {
 
     private int confirmedRequests;
     private int participantLimit;
-    private int views;
+
+    @OneToMany(mappedBy = "event")
+    private List<EventView> views;
 
     private boolean requestModeration = true;
     @NotNull
