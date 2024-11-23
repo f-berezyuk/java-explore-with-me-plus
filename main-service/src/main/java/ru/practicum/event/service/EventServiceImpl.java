@@ -295,38 +295,12 @@ public class EventServiceImpl implements EventService {
     @Transactional(readOnly = true)
     public List<EventFullDto> getAllEvents(List<Long> users, List<String> states, List<Long> categories,
                                            LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size) {
-        var page = from / size;
+        Pageable pageable = PageRequest.of(from / size, size);
 
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Event> cq = cb.createQuery(Event.class);
-        Root<Event> event = cq.from(Event.class);
+        Page<Event> events = eventRepository.findAllEvents(
+                users, states, categories, rangeStart, rangeEnd, pageable);
 
-        Predicate predicate = cb.conjunction();
-
-        if (users != null && !users.isEmpty()) {
-            predicate = cb.and(predicate, event.get("user").get("id").in(users));
-        }
-
-        if (states != null && !states.isEmpty()) {
-            predicate = cb.and(predicate, event.get("state").in(states));
-        }
-
-        if (categories != null && !categories.isEmpty()) {
-            predicate = cb.and(predicate, event.get("category").get("id").in(categories));
-        }
-
-        if (rangeStart != null && rangeEnd != null) {
-            predicate = cb.and(predicate, cb.between(event.get("eventDate"), rangeStart, rangeEnd));
-        }
-
-        cq.where(predicate);
-        TypedQuery<Event> query = entityManager.createQuery(cq);
-
-        // setting pagination parameters
-        query.setFirstResult(page * size);
-        query.setMaxResults(size);
-
-        return query.getResultList().stream().map(mapper::toFullDto).toList();
+        return events.stream().map(mapper::toFullDto).toList();
     }
 
     @Override

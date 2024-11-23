@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import ru.practicum.event.model.Location;
+import ru.practicum.event.model.constraint.FutureAtLeastTwoHours;
 
 @Data
 @Builder
@@ -28,6 +29,7 @@ public class NewEventDto {
     private String description;
     @NotNull
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @FutureAtLeastTwoHours
     private LocalDateTime eventDate;
     @NotNull
     private Location location;
