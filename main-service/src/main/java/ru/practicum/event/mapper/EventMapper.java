@@ -16,9 +16,11 @@ import ru.practicum.event.model.Event;
 public interface EventMapper {
 
     @Mapping(target = "eventDate", expression = "java(event.getEventDate())")
+    @Mapping(target = "views", expression = "java(event.getViews() == null ? 0 : event.getViews().size())")
     EventShortDto toShortDto(Event event);
 
     @Mapping(target = "initiator", source = "user")
+    @Mapping(target = "views", expression = "java(event.getViews() == null ? 0 : event.getViews().size())")
     EventFullDto toFullDto(Event event);
 
     @Mapping(target = "category.id", source = "category")

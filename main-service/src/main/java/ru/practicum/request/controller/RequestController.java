@@ -1,15 +1,21 @@
 package ru.practicum.request.controller;
 
+import java.util.List;
+
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.request.dto.RequestDto;
 import ru.practicum.request.service.RequestService;
-import ru.practicum.statistic.service.StatService;
-
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -17,27 +23,22 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RequestController {
     private final RequestService requestService;
-    private final StatService statService;
 
     @GetMapping
     List<RequestDto> getRequests(@PathVariable long userId, HttpServletRequest httpServletRequest) {
-        List<RequestDto> requestDtos = requestService.getRequests(userId);
-        statService.createStats(httpServletRequest.getRequestURI(), httpServletRequest.getRemoteAddr());
-        return requestDtos;
+        return requestService.getRequests(userId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    RequestDto createRequest(@PathVariable long userId, @RequestParam long eventId, HttpServletRequest httpServletRequest) {
-        RequestDto requestDto = requestService.createRequest(userId, eventId);
-        statService.createStats(httpServletRequest.getRequestURI(), httpServletRequest.getRemoteAddr());
-        return requestDto;
+    RequestDto createRequest(@PathVariable long userId, @RequestParam long eventId,
+                             HttpServletRequest httpServletRequest) {
+        return requestService.createRequest(userId, eventId);
     }
 
     @PatchMapping("/{requestId}/cancel")
-    RequestDto requestCancel(@PathVariable long requestId, @PathVariable long userId, HttpServletRequest httpServletRequest) {
-        RequestDto requestDto = requestService.cancelRequest(userId, requestId);
-        statService.createStats(httpServletRequest.getRequestURI(), httpServletRequest.getRemoteAddr());
-        return requestDto;
+    RequestDto requestCancel(@PathVariable long requestId, @PathVariable long userId,
+                             HttpServletRequest httpServletRequest) {
+        return requestService.cancelRequest(userId, requestId);
     }
 }

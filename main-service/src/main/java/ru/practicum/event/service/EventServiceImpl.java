@@ -13,6 +13,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -51,10 +52,10 @@ public class EventServiceImpl implements EventService {
     private final EventMapper mapper;
     private final ReqMapper requestMapper;
     private final UserService userService;
-
+    private final CategoriesService categoryService;
+    private final ViewService viewService;
     @PersistenceContext
     private EntityManager entityManager;
-    private CategoriesService categoryService;
 
     @Override
     @Transactional(readOnly = true)
@@ -192,7 +193,8 @@ public class EventServiceImpl implements EventService {
     @Transactional(readOnly = true)
     public List<EventShortDto> getPublicEvents(String text, List<Long> categories, Boolean paid,
                                                LocalDateTime rangeStart, LocalDateTime rangeEnd,
-                                               Boolean onlyAvailable, String sort, int from, int size) {
+                                               Boolean onlyAvailable, String sort, int from, int size,
+                                               HttpServletRequest request) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Event> cq = cb.createQuery(Event.class);
         Root<Event> event = cq.from(Event.class);
@@ -259,15 +261,19 @@ public class EventServiceImpl implements EventService {
 
         // Выполнение запроса
         List<Event> resultList = query.getResultList();
+        eventRepository.saveAll(resultList);
+        viewService.registerAll(resultList, request);
         return resultList.stream().map(mapper::toShortDto).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public EventFullDto getPublicEvent(Long id) {
+    public EventFullDto getPublicEvent(Long id, HttpServletRequest request) {
         Event event =
                 eventRepository.findByIdAndState(id, EventState.PUBLISHED).orElseThrow(() -> new NotFoundException(
                         "Event with id " + id + " not found or not published"));
+        eventRepository.saveAndFlush(event);
+        viewService.register(event, request);
         return mapper.toFullDto(event);
     }
 

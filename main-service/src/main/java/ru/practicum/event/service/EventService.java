@@ -3,6 +3,7 @@ package ru.practicum.event.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventRequestStatusUpdateRequest;
@@ -29,9 +30,10 @@ public interface EventService {
 
     List<EventShortDto> getPublicEvents(String text, List<Long> categories, Boolean paid,
                                         LocalDateTime rangeStart, LocalDateTime rangeEnd,
-                                        Boolean onlyAvailable, String sort, int from, int size);
+                                        Boolean onlyAvailable, String sort, int from, int size,
+                                        HttpServletRequest request);
 
-    EventFullDto getPublicEvent(Long id);
+    EventFullDto getPublicEvent(Long id, HttpServletRequest request);
 
     List<EventFullDto> getAllEvents(List<Long> users, List<String> states, List<Long> categories,
                                     LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size);

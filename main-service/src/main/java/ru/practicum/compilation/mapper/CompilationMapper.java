@@ -1,9 +1,9 @@
 package ru.practicum.compilation.mapper;
 
-import ru.practicum.compilation.dto.CompilationDto;
-import ru.practicum.compilation.model.Compilation;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
+import ru.practicum.compilation.dto.CompilationDto;
+import ru.practicum.compilation.model.Compilation;
 import ru.practicum.event.mapper.EventMapper;
 
 @Component
