@@ -37,7 +37,8 @@ public class AdminCompilationController {
 
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public CompilationDto updateCompilation(@PathVariable Long id, @RequestBody UpdateCompilationRequest request) throws BadRequestException {
+    public CompilationDto updateCompilation(@PathVariable Long id,
+                                            @RequestBody @Valid UpdateCompilationRequest request) throws BadRequestException {
         return compilationService.update(id, request);
     }
 
