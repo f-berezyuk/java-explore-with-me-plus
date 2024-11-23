@@ -1,8 +1,9 @@
 package ru.practicum.event.model.constraint;
 
+import java.time.LocalDateTime;
+
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import java.time.LocalDateTime;
 
 public class FutureAtLeastTwoHoursValidator implements ConstraintValidator<FutureAtLeastTwoHours, LocalDateTime> {
 

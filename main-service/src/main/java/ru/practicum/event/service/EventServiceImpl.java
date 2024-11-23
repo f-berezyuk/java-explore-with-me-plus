@@ -159,7 +159,7 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public EventRequestStatusUpdateResult updateRequest(Long userId, Long eventId,
                                                         EventRequestStatusUpdateRequest updateRequest) {
-        List<RequestDto> requests = requestService.getRequestsByUserIdAndEventIdAndRequestIds(userId, eventId,
+        List<RequestDto> requests = requestService.getRequestsByUserIdAndEventIdAndRequestIdIn(userId, eventId,
                 updateRequest.getRequestIds());
         int confirmedRequestCount = requestService.getConfirmedRequests(eventId, RequestStatus.CONFIRMED).size();
 
