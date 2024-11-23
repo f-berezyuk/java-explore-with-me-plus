@@ -7,6 +7,7 @@ import ru.practicum.user.model.User;
 import java.util.List;
 
 public interface UserService {
+    UserDto getUser(Long userId);
 
     List<UserDto> getUsers(List<Long> ids, Integer from, Integer size);
 

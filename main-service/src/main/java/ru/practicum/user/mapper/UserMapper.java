@@ -14,5 +14,7 @@ public interface UserMapper {
 
     UserDto toDto(User entity);
 
+    User toEntity(UserDto dto);
+
     UserShortDto toShortDto(User entity);
 }

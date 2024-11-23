@@ -24,6 +24,13 @@ public class UserServiceImpl implements UserService {
     private final UserMapper mapper;
 
     @Override
+    public UserDto getUser(Long userId) {
+        log.info("getUser params: userId = {}", userId);
+        return mapper.toDto(repository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User with id " + userId + " was not found")));
+    }
+
+    @Override
     public List<UserDto> getUsers(List<Long> ids, Integer from, Integer size) {
         log.info("getUsers params: ids = {}, from = {}, size = {}", ids, from, size);
         PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
