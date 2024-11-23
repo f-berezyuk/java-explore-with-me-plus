@@ -1,8 +1,10 @@
 package ru.practicum.request.service;
 
-import ru.practicum.request.dto.RequestDto;
-
 import java.util.List;
+
+import ru.practicum.request.dto.RequestDto;
+import ru.practicum.request.model.Request;
+import ru.practicum.request.model.RequestStatus;
 
 public interface RequestService {
     List<RequestDto> getRequests(long userId, long eventId);
@@ -16,4 +18,6 @@ public interface RequestService {
     List<RequestDto> saveAll(List<RequestDto> requests);
 
     RequestDto cancelRequest(long userId, long requestId);
+
+    List<Request> getConfirmedRequests(Long eventId, RequestStatus status);
 }

@@ -1,5 +1,7 @@
 package ru.practicum.categories.service;
 
+import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -11,8 +13,6 @@ import ru.practicum.categories.mapper.CategoryMapper;
 import ru.practicum.categories.model.Category;
 import ru.practicum.categories.repository.CategoriesRepository;
 import ru.practicum.common.NotFoundException;
-
-import java.util.List;
 
 @Transactional(readOnly = true)
 @Service
@@ -66,5 +66,12 @@ public class CategoriesServiceImpl implements CategoriesService {
         return categoriesRepository.findAll(PageRequest.of(from > 0 ? from / size : 0, size))
                 .stream()
                 .map(categoryMapper::toDto).toList();
+    }
+
+    @Override
+    public Category getOrThrow(Long id) {
+        return categoriesRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Category with id " + id + " not found"));
+
     }
 }

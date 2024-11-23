@@ -1,11 +1,18 @@
 package ru.practicum.event.service;
 
-import jakarta.validation.Valid;
-import ru.practicum.event.dto.*;
-import ru.practicum.request.dto.RequestDto;
-
 import java.time.LocalDateTime;
 import java.util.List;
+
+import jakarta.validation.Valid;
+import ru.practicum.event.dto.EventFullDto;
+import ru.practicum.event.dto.EventRequestStatusUpdateRequest;
+import ru.practicum.event.dto.EventRequestStatusUpdateResult;
+import ru.practicum.event.dto.EventShortDto;
+import ru.practicum.event.dto.NewEventDto;
+import ru.practicum.event.dto.UpdateEventAdminRequest;
+import ru.practicum.event.dto.UpdateEventUserRequest;
+import ru.practicum.event.model.Event;
+import ru.practicum.request.dto.RequestDto;
 
 public interface EventService {
     List<EventShortDto> getAllByUserId(Long userId, int from, int size);
@@ -26,7 +33,10 @@ public interface EventService {
 
     EventFullDto getPublicEvent(Long id);
 
-    List<EventFullDto> getAllEvents(List<Long> users, List<String> states, List<Long> categories, LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size);
+    List<EventFullDto> getAllEvents(List<Long> users, List<String> states, List<Long> categories,
+                                    LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size);
 
     EventFullDto updateEventByAdmin(Long eventId, UpdateEventAdminRequest request);
+
+    Event getOrThrow(Long eventId);
 }
