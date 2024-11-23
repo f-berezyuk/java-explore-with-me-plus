@@ -1,6 +1,8 @@
 package ru.practicum.categories.service;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +14,9 @@ import ru.practicum.categories.dto.NewCategoryDto;
 import ru.practicum.categories.mapper.CategoryMapper;
 import ru.practicum.categories.model.Category;
 import ru.practicum.categories.repository.CategoriesRepository;
+import ru.practicum.common.ConflictException;
 import ru.practicum.common.NotFoundException;
+import ru.practicum.event.repository.EventRepository;
 
 @Transactional(readOnly = true)
 @Service
@@ -21,11 +25,14 @@ import ru.practicum.common.NotFoundException;
 public class CategoriesServiceImpl implements CategoriesService {
     private final CategoriesRepository categoriesRepository;
     private final CategoryMapper categoryMapper;
+    private final EventRepository eventRepository;
 
     @Transactional
     @Override
     public CategoryDto addCategory(NewCategoryDto newCategoryDto) {
-        Category category = categoriesRepository.save(categoryMapper.toEntity(newCategoryDto));
+        Category entity = categoryMapper.toEntity(newCategoryDto);
+        assertUniqueName(newCategoryDto, null);
+        Category category = categoriesRepository.saveAndFlush(entity);
         log.info("Category is created: {}", category);
         return categoryMapper.toDto(category);
     }
@@ -36,14 +43,35 @@ public class CategoriesServiceImpl implements CategoriesService {
         log.info("start updateCategory");
         Category category = categoriesRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Category with id " + id + " not found"));
+        assertUniqueName(updateCategoryDto, category);
         category = categoriesRepository.save(categoryMapper.update(category, updateCategoryDto));
         log.info("Category is updated: {}", category);
         return categoryMapper.toDto(categoriesRepository.save(category));
     }
 
+    private void assertUniqueName(NewCategoryDto updateCategoryDto, Category category) {
+        categoriesRepository.findByName(updateCategoryDto.getName())
+                .ifPresent(cat -> {
+                    if (category == null || !Objects.equals(cat.getId(), category.getId())) {
+                        throw new ConflictException("Category with name {" +
+                                                    updateCategoryDto.getName() +
+                                                    "} already exist.");
+                    }
+                });
+    }
+
     @Transactional
     @Override
     public void deleteCategory(Long id) {
+        eventRepository.findAllByCategoryId(id).ifPresent(events ->
+        {
+            if (events.isEmpty()) {
+                return;
+            }
+            throw new ConflictException("Category has this events: [" +
+                                        (Arrays.toString(new List[]{events})) +
+                                        "]. Change events before drop category.");
+        });
         categoriesRepository.deleteById(id);
         log.info("Category deleted with id: {}", id);
     }
