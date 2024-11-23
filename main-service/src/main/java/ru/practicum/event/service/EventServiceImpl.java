@@ -15,7 +15,9 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -99,7 +101,7 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public EventFullDto updateEvent(Long userId, Long eventId, UpdateEventUserRequest request) {
         if (request.getEventDate() != null && request.getEventDate().isBefore(LocalDateTime.now().plusHours(2L))) {
-            throw new ConflictException("Not valid time. Should not be less than now + 2 hours.");
+            throw new IllegalArgumentException("Not valid time. Should not be less than now + 2 hours.");
         }
         Event event = eventRepository.findByIdAndUser_Id(eventId, userId).orElseThrow(() -> new NotFoundException(
                 "Event with id " + eventId + " was not found"));
