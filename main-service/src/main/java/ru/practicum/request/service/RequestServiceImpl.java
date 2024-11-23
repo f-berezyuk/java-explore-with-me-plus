@@ -1,5 +1,10 @@
 package ru.practicum.request.service;
 
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.common.ConflictException;
@@ -14,11 +19,6 @@ import ru.practicum.request.model.RequestStatus;
 import ru.practicum.request.repository.RequestRepository;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
-
-import java.text.MessageFormat;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -70,17 +70,34 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public RequestDto cancelRequest(long userId, long requestId) {
-        Request request = requestRepository.findByIdAndRequesterId(requestId, userId).orElseThrow(() -> new NotFoundException(MessageFormat.format("Request with id={0} was not found", requestId)));
+        Request request =
+                requestRepository.findByIdAndRequesterId(requestId, userId).orElseThrow(() -> new NotFoundException(MessageFormat.format("Request with id={0} was not found", requestId)));
         request.setStatus(RequestStatus.CANCELED);
         return requestMapper.toDto(requestRepository.save(request));
     }
 
+    @Override
+    public List<Request> getConfirmedRequests(Long eventId, RequestStatus status) {
+        return requestRepository.findAllByEventIdAndStatus(eventId, status);
+    }
+
     private User findUserById(long userId) {
-        return userRepository.findById(userId).orElseThrow(() -> new NotFoundException(MessageFormat.format("User with id={0} was not found", userId)));
+        return userRepository.findById(userId).orElseThrow(() -> new NotFoundException(MessageFormat.format("User " +
+                                                                                                            "with " +
+                                                                                                            "id={0} " +
+                                                                                                            "was not " +
+                                                                                                            "found",
+                userId)));
     }
 
     private Event findEventById(long eventId) {
-        return eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException(MessageFormat.format("Event with id={0} was not found", eventId)));
+        return eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException(MessageFormat.format("Event " +
+                                                                                                              "with " +
+                                                                                                              "id={0}" +
+                                                                                                              " was " +
+                                                                                                              "not " +
+                                                                                                              "found"
+                , eventId)));
     }
 
     @Override
@@ -97,7 +114,8 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public List<RequestDto> getRequestsByUserIdAndEventIdAndRequestIds(long userId, long eventId, List<Long> requestIds) {
+    public List<RequestDto> getRequestsByUserIdAndEventIdAndRequestIds(long userId, long eventId,
+                                                                       List<Long> requestIds) {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Event not found"));
 
         if (!event.getUser().getId().equals(userId)) {

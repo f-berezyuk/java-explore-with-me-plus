@@ -3,6 +3,8 @@ package ru.practicum.event.service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -16,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.categories.service.CategoriesService;
 import ru.practicum.common.ConflictException;
 import ru.practicum.common.NotFoundException;
 import ru.practicum.event.dto.EventFullDto;
@@ -51,6 +54,7 @@ public class EventServiceImpl implements EventService {
 
     @PersistenceContext
     private EntityManager entityManager;
+    private CategoriesService categoryService;
 
     @Override
     @Transactional(readOnly = true)
@@ -92,11 +96,25 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public EventFullDto updateEvent(Long userId, Long eventId, UpdateEventUserRequest request) {
+        if (request.getEventDate() != null && request.getEventDate().isBefore(LocalDateTime.now().plusHours(2L))) {
+            throw new ConflictException("Not valid time. Should not be less than now + 2 hours.");
+        }
         Event event = eventRepository.findByIdAndUser_Id(eventId, userId).orElseThrow(() -> new NotFoundException(
                 "Event with id " + eventId + " was not found"));
 
+        var updateBuilder = event.toBuilder();
+
         if (event.getState() == EventState.PUBLISHED) {
-            throw new ConflictException("Event with id " + eventId + " has already been published");
+            throw new ConflictException("Only pending or canceled events can be changed");
+        }
+
+        if (request.getStateAction() != null) {
+            Map<StateAction, EventState> map = Map.of(
+                    StateAction.SEND_TO_REVIEW, EventState.PENDING,
+                    StateAction.CANCEL_REVIEW, EventState.CANCELED
+            );
+
+            updateBuilder.state(map.get(request.getStateAction()));
         }
 
         if (request.getLocation() != null) {
@@ -104,15 +122,27 @@ public class EventServiceImpl implements EventService {
             Location updatedLocation = null;
             if (newLocation.getId() == null) {
                 updatedLocation =
-                        locationRepository.findByLatAndLon(newLocation.getLat(), newLocation.getLon()).orElseGet(() -> locationRepository.save(newLocation));
+                        locationRepository
+                                .findByLatAndLon(newLocation.getLat(), newLocation.getLon())
+                                .orElseGet(() -> locationRepository.save(newLocation));
             }
 
-            event.setLocation(updatedLocation);
-
+            updateBuilder.location(updatedLocation);
         }
 
-        mapper.updateFromUserRequest(request, event);
-        return mapper.toFullDto(eventRepository.save(event));
+        Optional.ofNullable(request.getAnnotation()).ifPresent(updateBuilder::annotation);
+        Optional.ofNullable(request.getCategory()).ifPresent(catId ->
+                updateBuilder.category(categoryService.getOrThrow(catId)));
+        Optional.ofNullable(request.getDescription()).ifPresent(updateBuilder::description);
+        Optional.ofNullable(request.getEventDate()).ifPresent(updateBuilder::eventDate);
+        Optional.ofNullable(request.getPaid()).ifPresent(updateBuilder::paid);
+        Optional.ofNullable(request.getParticipantLimit()).ifPresent(updateBuilder::participantLimit);
+        Optional.ofNullable(request.getRequestModeration()).ifPresent(updateBuilder::requestModeration);
+        Optional.ofNullable(request.getTitle()).ifPresent(updateBuilder::title);
+
+        event = updateBuilder.build();
+
+        return mapper.toFullDto(eventRepository.saveAndFlush(event));
     }
 
     @Override
@@ -127,15 +157,27 @@ public class EventServiceImpl implements EventService {
                                                         EventRequestStatusUpdateRequest updateRequest) {
         List<RequestDto> requests = requestService.getRequestsByUserIdAndEventIdAndRequestIds(userId, eventId,
                 updateRequest.getRequestIds());
+        int confirmedRequestCount = requestService.getConfirmedRequests(eventId, RequestStatus.CONFIRMED).size();
 
         List<ParticipationRequestDto> confirmedRequests = new ArrayList<>();
         List<ParticipationRequestDto> rejectedRequests = new ArrayList<>();
+
+        Event event = getOrThrow(eventId);
+        int size = updateRequest.getRequestIds().size();
+        int confirmedSize = updateRequest.getStatus() == RequestStatus.CONFIRMED ? size : 0;
+        if (event.getParticipantLimit() - confirmedRequestCount < confirmedSize) {
+            throw new ConflictException("Event limit exceed. Only " +
+                                        (event.getParticipantLimit() - confirmedRequestCount) + " places left.");
+        }
 
         for (RequestDto request : requests) {
             if (updateRequest.getStatus() == RequestStatus.CONFIRMED) {
                 request.setStatus(RequestStatus.CONFIRMED);
                 confirmedRequests.add(requestMapper.toParticipationRequestDto(request));
             } else if (updateRequest.getStatus() == RequestStatus.REJECTED) {
+                if (request.getStatus() == RequestStatus.CONFIRMED) {
+                    throw new ConflictException("Forbidden to reject confirmed request.");
+                }
                 request.setStatus(RequestStatus.REJECTED);
                 rejectedRequests.add(requestMapper.toParticipationRequestDto(request));
             }
@@ -284,6 +326,12 @@ public class EventServiceImpl implements EventService {
         event.setState(request.getStateAction() == StateAction.PUBLISH_EVENT ? EventState.PUBLISHED :
                 EventState.CANCELED);
         return mapper.toFullDto(eventRepository.save(event));
+    }
+
+    @Override
+    public Event getOrThrow(Long eventId) {
+        return eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException("Event with id " + eventId + " was not found"));
     }
 
     private void validateEventStateForAdminUpdate(Event event, StateAction stateAction) {

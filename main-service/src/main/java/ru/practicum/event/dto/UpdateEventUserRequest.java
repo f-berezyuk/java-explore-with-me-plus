@@ -1,13 +1,14 @@
 package ru.practicum.event.dto;
 
+import java.time.LocalDateTime;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.event.model.Location;
-
-import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -21,8 +22,9 @@ public class UpdateEventUserRequest {
     private LocalDateTime eventDate;
     private Location location;
     private Boolean paid;
+    @PositiveOrZero
     private Integer participantLimit;
     private Boolean requestModeration;
-    private String stateAction;
+    private StateAction stateAction;
     private String title;
 }
