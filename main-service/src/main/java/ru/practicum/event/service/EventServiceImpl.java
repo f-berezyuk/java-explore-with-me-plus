@@ -15,7 +15,9 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -99,7 +101,7 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public EventFullDto updateEvent(Long userId, Long eventId, UpdateEventUserRequest request) {
         if (request.getEventDate() != null && request.getEventDate().isBefore(LocalDateTime.now().plusHours(2L))) {
-            throw new ConflictException("Not valid time. Should not be less than now + 2 hours.");
+            throw new IllegalArgumentException("Not valid time. Should not be less than now + 2 hours.");
         }
         Event event = eventRepository.findByIdAndUser_Id(eventId, userId).orElseThrow(() -> new NotFoundException(
                 "Event with id " + eventId + " was not found"));
@@ -293,38 +295,12 @@ public class EventServiceImpl implements EventService {
     @Transactional(readOnly = true)
     public List<EventFullDto> getAllEvents(List<Long> users, List<String> states, List<Long> categories,
                                            LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size) {
-        var page = from / size;
+        Pageable pageable = PageRequest.of(from / size, size);
 
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Event> cq = cb.createQuery(Event.class);
-        Root<Event> event = cq.from(Event.class);
+        Page<Event> events = eventRepository.findAllEvents(
+                users, states, categories, rangeStart, rangeEnd, pageable);
 
-        Predicate predicate = cb.conjunction();
-
-        if (users != null && !users.isEmpty()) {
-            predicate = cb.and(predicate, event.get("user").get("id").in(users));
-        }
-
-        if (states != null && !states.isEmpty()) {
-            predicate = cb.and(predicate, event.get("state").in(states));
-        }
-
-        if (categories != null && !categories.isEmpty()) {
-            predicate = cb.and(predicate, event.get("category").get("id").in(categories));
-        }
-
-        if (rangeStart != null && rangeEnd != null) {
-            predicate = cb.and(predicate, cb.between(event.get("eventDate"), rangeStart, rangeEnd));
-        }
-
-        cq.where(predicate);
-        TypedQuery<Event> query = entityManager.createQuery(cq);
-
-        // setting pagination parameters
-        query.setFirstResult(page * size);
-        query.setMaxResults(size);
-
-        return query.getResultList().stream().map(mapper::toFullDto).toList();
+        return events.stream().map(mapper::toFullDto).toList();
     }
 
     @Override

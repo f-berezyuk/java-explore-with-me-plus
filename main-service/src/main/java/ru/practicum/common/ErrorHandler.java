@@ -1,5 +1,6 @@
 package ru.practicum.common;
 
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -32,7 +33,7 @@ public class ErrorHandler {
         return new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred", e.getMessage(), stackTrace);
     }
 
-    @ExceptionHandler({MissingServletRequestParameterException.class, MethodArgumentNotValidException.class, ValidationException.class, HttpMessageNotReadableException.class, HandlerMethodValidationException.class, IllegalArgumentException.class})
+    @ExceptionHandler({MissingServletRequestParameterException.class, MethodArgumentNotValidException.class, ValidationException.class, HttpMessageNotReadableException.class, HandlerMethodValidationException.class, IllegalArgumentException.class, ConstraintViolationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError handleMethodArgumentNotValidException(final Exception e) {
         log.error("{} {}", HttpStatus.BAD_REQUEST, e.getMessage(), e);

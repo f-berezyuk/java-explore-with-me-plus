@@ -57,12 +57,17 @@ public class RequestServiceImpl implements RequestService {
         }
 
         Request eventRequest = new Request(null, LocalDateTime.now(), event, user, RequestStatus.PENDING);
-        if (!event.isRequestModeration()) {
+        if (event.getState().equals(EventState.PUBLISHED)) {
             eventRequest.setStatus(RequestStatus.CONFIRMED);
         }
 
         if (event.getParticipantLimit() == 0) {
             eventRequest.setStatus(RequestStatus.CONFIRMED);
+        }
+
+        if (eventRequest.getStatus() == RequestStatus.CONFIRMED) {
+            event.setConfirmedRequests(event.getConfirmedRequests() + 1);
+            eventRepository.save(event);
         }
 
         return requestMapper.toDto(requestRepository.save(eventRequest));
