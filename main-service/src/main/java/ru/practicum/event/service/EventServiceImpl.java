@@ -15,9 +15,7 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,7 +59,7 @@ public class EventServiceImpl implements EventService {
     private EntityManager entityManager;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public List<EventShortDto> getAllByUserId(Long userId, int from, int size) {
         var page = from / size;
         var sort = Sort.by("id");
@@ -90,7 +88,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public EventFullDto getEvent(Long userId, Long eventId) {
         Event event = eventRepository.findByIdAndUser_Id(eventId, userId).orElseThrow(() -> new NotFoundException(
                 "Event with id " + eventId + " and user id " + userId + " was not found"));
@@ -150,7 +148,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public List<RequestDto> getRequests(Long userId, Long eventId) {
         return requestService.getRequests(userId, eventId);
     }
@@ -193,7 +191,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public List<EventShortDto> getPublicEvents(String text, List<Long> categories, Boolean paid,
                                                LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                                Boolean onlyAvailable, String sort, int from, int size,
@@ -281,7 +279,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public EventFullDto getPublicEvent(Long id, HttpServletRequest request) {
         Event event =
                 eventRepository.findByIdAndState(id, EventState.PUBLISHED).orElseThrow(() -> new NotFoundException(
@@ -292,15 +290,41 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public List<EventFullDto> getAllEvents(List<Long> users, List<String> states, List<Long> categories,
                                            LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size) {
-        Pageable pageable = PageRequest.of(from / size, size);
+        var page = from / size;
+        assertDataValid(rangeStart, rangeEnd);
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Event> cq = cb.createQuery(Event.class);
+        Root<Event> event = cq.from(Event.class);
 
-        Page<Event> events = eventRepository.findAllEvents(
-                users, states, categories, rangeStart, rangeEnd, pageable);
+        Predicate predicate = cb.conjunction();
 
-        return events.stream().map(mapper::toFullDto).toList();
+        if (users != null && !users.isEmpty()) {
+            predicate = cb.and(predicate, event.get("user").get("id").in(users));
+        }
+
+        if (states != null && !states.isEmpty()) {
+            predicate = cb.and(predicate, event.get("state").in(states));
+        }
+
+        if (categories != null && !categories.isEmpty()) {
+            predicate = cb.and(predicate, event.get("category").get("id").in(categories));
+        }
+
+        if (rangeStart != null && rangeEnd != null) {
+            predicate = cb.and(predicate, cb.between(event.get("eventDate"), rangeStart, rangeEnd));
+        }
+
+        cq.where(predicate);
+        TypedQuery<Event> query = entityManager.createQuery(cq);
+
+        // setting pagination parameters
+        query.setFirstResult(page * size);
+        query.setMaxResults(size);
+
+        return query.getResultList().stream().map(mapper::toFullDto).toList();
     }
 
     @Override

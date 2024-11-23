@@ -1,6 +1,5 @@
 package ru.practicum.event.repository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,17 +23,4 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     Optional<Event> findByIdAndUser_Id(Long eventId, Long userId);
 
     Optional<List<Event>> findAllByCategoryId(Long id);
-
-    @Query("""
-                SELECT e
-                FROM Event e
-                WHERE (:users IS NULL OR e.user.id IN :users)
-                  AND (:states IS NULL OR e.state IN :states)
-                  AND (:categories IS NULL OR e.category.id IN :categories)
-                  AND (:rangeStart IS NULL OR e.eventDate >= :rangeStart)
-                  AND (:rangeEnd IS NULL OR e.eventDate <= :rangeEnd)
-            """)
-    Page<Event> findAllEvents(List<Long> users, List<String> states, List<Long> categories,
-                              LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
-
 }

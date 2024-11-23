@@ -18,7 +18,7 @@ import ru.practicum.user.repository.UserRepository;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class UserServiceImpl implements UserService {
     private final UserRepository repository;
     private final UserMapper mapper;
