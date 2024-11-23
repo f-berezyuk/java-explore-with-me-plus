@@ -24,7 +24,7 @@ public class ViewServiceImpl implements ViewService {
     @Override
     public void registerAll(List<Event> events, HttpServletRequest request) {
         List<EventView> views = events.stream().map(event -> getEventView(request, event))
-                .filter(view -> viewRepository.findByIpAndEventId(view.getIp(), view.getId()).isEmpty())
+                .filter(view -> viewRepository.findByIpAndEventId(view.getIp(), view.getEvent().getId()).isEmpty())
                 .toList();
 
         viewRepository.saveAllAndFlush(views);
