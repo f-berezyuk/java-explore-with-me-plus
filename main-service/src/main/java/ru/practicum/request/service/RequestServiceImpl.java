@@ -1,10 +1,5 @@
 package ru.practicum.request.service;
 
-import java.text.MessageFormat;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.common.ConflictException;
@@ -19,6 +14,11 @@ import ru.practicum.request.model.RequestStatus;
 import ru.practicum.request.repository.RequestRepository;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
+
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -83,21 +83,21 @@ public class RequestServiceImpl implements RequestService {
 
     private User findUserById(long userId) {
         return userRepository.findById(userId).orElseThrow(() -> new NotFoundException(MessageFormat.format("User " +
-                                                                                                            "with " +
-                                                                                                            "id={0} " +
-                                                                                                            "was not " +
-                                                                                                            "found",
+                        "with " +
+                        "id={0} " +
+                        "was not " +
+                        "found",
                 userId)));
     }
 
     private Event findEventById(long eventId) {
         return eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException(MessageFormat.format("Event " +
-                                                                                                              "with " +
-                                                                                                              "id={0}" +
-                                                                                                              " was " +
-                                                                                                              "not " +
-                                                                                                              "found"
-                , eventId)));
+                        "with " +
+                        "id={0}" +
+                        " was " +
+                        "not " +
+                        "found",
+                eventId)));
     }
 
     @Override

@@ -1,9 +1,5 @@
 package ru.practicum.categories.service;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -17,6 +13,10 @@ import ru.practicum.categories.repository.CategoriesRepository;
 import ru.practicum.common.ConflictException;
 import ru.practicum.common.NotFoundException;
 import ru.practicum.event.repository.EventRepository;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 @Transactional(readOnly = true)
 @Service
@@ -54,8 +54,8 @@ public class CategoriesServiceImpl implements CategoriesService {
                 .ifPresent(cat -> {
                     if (category == null || !Objects.equals(cat.getId(), category.getId())) {
                         throw new ConflictException("Category with name {" +
-                                                    updateCategoryDto.getName() +
-                                                    "} already exist.");
+                                updateCategoryDto.getName() +
+                                "} already exist.");
                     }
                 });
     }
@@ -63,14 +63,13 @@ public class CategoriesServiceImpl implements CategoriesService {
     @Transactional
     @Override
     public void deleteCategory(Long id) {
-        eventRepository.findAllByCategoryId(id).ifPresent(events ->
-        {
+        eventRepository.findAllByCategoryId(id).ifPresent(events -> {
             if (events.isEmpty()) {
                 return;
             }
             throw new ConflictException("Category has this events: [" +
-                                        (Arrays.toString(new List[]{events})) +
-                                        "]. Change events before drop category.");
+                    (Arrays.toString(new List[]{events})) +
+                    "]. Change events before drop category.");
         });
         categoriesRepository.deleteById(id);
         log.info("Category deleted with id: {}", id);

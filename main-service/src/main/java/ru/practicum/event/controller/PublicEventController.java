@@ -1,18 +1,15 @@
 package ru.practicum.event.controller;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.service.EventService;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("/events")
@@ -31,13 +28,14 @@ public class PublicEventController {
                                          @RequestParam(defaultValue = "false") Boolean onlyAvailable,
                                          @RequestParam(required = false) String sort,
                                          @RequestParam(defaultValue = "0") int from,
-                                         @RequestParam(defaultValue = "10") int size) {
-        return eventService.getPublicEvents(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from,
-                size);
+                                         @RequestParam(defaultValue = "10") int size,
+                                         HttpServletRequest httpServletRequest) {
+        return eventService.getPublicEvents(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
     }
 
     @GetMapping("/{id}")
-    public EventFullDto getEvent(@PathVariable Long id) {
+    public EventFullDto getEvent(@PathVariable Long id,
+                                 HttpServletRequest httpServletRequest) {
         return eventService.getPublicEvent(id);
     }
 }
