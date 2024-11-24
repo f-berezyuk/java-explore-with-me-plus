@@ -1,6 +1,6 @@
 package ru.practicum.comment.controller;
 
-import lombok.NonNull;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -11,7 +11,6 @@ import ru.practicum.comment.dto.CommentDto;
 import ru.practicum.comment.dto.CommentDtoPublic;
 import ru.practicum.comment.service.CommentService;
 
-import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
