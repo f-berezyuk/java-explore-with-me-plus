@@ -1,11 +1,5 @@
 package ru.practicum.event.service;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -15,23 +9,14 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.categories.service.CategoriesService;
 import ru.practicum.common.ConflictException;
 import ru.practicum.common.NotFoundException;
+import ru.practicum.common.PagebleBuilder;
 import ru.practicum.common.ValidationException;
-import ru.practicum.event.dto.EventFullDto;
-import ru.practicum.event.dto.EventRequestStatusUpdateRequest;
-import ru.practicum.event.dto.EventRequestStatusUpdateResult;
-import ru.practicum.event.dto.EventShortDto;
-import ru.practicum.event.dto.NewEventDto;
-import ru.practicum.event.dto.ParticipationRequestDto;
-import ru.practicum.event.dto.StateAction;
-import ru.practicum.event.dto.UpdateEventAdminRequest;
-import ru.practicum.event.dto.UpdateEventUserRequest;
+import ru.practicum.event.dto.*;
 import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.mapper.ReqMapper;
 import ru.practicum.event.model.Event;
@@ -43,6 +28,12 @@ import ru.practicum.request.dto.RequestDto;
 import ru.practicum.request.model.RequestStatus;
 import ru.practicum.request.service.RequestService;
 import ru.practicum.user.service.UserService;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -59,11 +50,9 @@ public class EventServiceImpl implements EventService {
     private EntityManager entityManager;
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<EventShortDto> getAllByUserId(Long userId, int from, int size) {
-        var page = from / size;
-        var sort = Sort.by("id");
-        var pageable = PageRequest.of(page, size, sort);
+        var pageable = PagebleBuilder.getPageable(from, size, "id");
         return eventRepository.findAllByUserId(userId, pageable).getContent().stream().map(mapper::toShortDto).toList();
     }
 
@@ -169,7 +158,7 @@ public class EventServiceImpl implements EventService {
         int confirmedSize = updateRequest.getStatus() == RequestStatus.CONFIRMED ? size : 0;
         if (event.getParticipantLimit() - confirmedRequestCount < confirmedSize) {
             throw new ConflictException("Event limit exceed. Only " +
-                                        (event.getParticipantLimit() - confirmedRequestCount) + " places left.");
+                    (event.getParticipantLimit() - confirmedRequestCount) + " places left.");
         }
 
         for (RequestDto request : requests) {

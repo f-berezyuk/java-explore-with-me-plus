@@ -3,10 +3,9 @@ package ru.practicum.compilation.service;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.common.NotFoundException;
+import ru.practicum.common.PagebleBuilder;
 import ru.practicum.compilation.dto.CompilationDto;
 import ru.practicum.compilation.dto.NewCompilationDto;
 import ru.practicum.compilation.dto.UpdateCompilationRequest;
@@ -38,9 +37,7 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public List<CompilationDto> getAll(boolean pinned, int from, int size) {
         log.debug("Fetching compilations with pinned={} from={} size={}", pinned, from, size);
-        var page = from / size;
-        var sort = Sort.by("id");
-        var pageable = PageRequest.of(page, size, sort);
+        var pageable = PagebleBuilder.getPageable(from, size, "id");
         var compilationPage = compilationsRepository.findByPinned(pinned, pageable);
         var compilations = compilationPage.getContent();
 
