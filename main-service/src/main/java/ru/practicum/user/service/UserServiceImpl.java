@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.common.ConflictException;
 import ru.practicum.common.NotFoundException;
-import ru.practicum.common.PagebleBuilder;
+import ru.practicum.common.PageableBuilder;
 import ru.practicum.user.dto.UserDto;
 import ru.practicum.user.dto.UserRequestDto;
 import ru.practicum.user.mapper.UserMapper;
@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDto> getUsers(List<Long> ids, Integer from, Integer size) {
         log.info("getUsers params: ids = {}, from = {}, size = {}", ids, from, size);
-        PageRequest page = PagebleBuilder.getPageable(from > 0 ? from / size : 0, size);
+        PageRequest page = PageableBuilder.getPageable(from > 0 ? from / size : 0, size);
 
         if (ids == null || ids.isEmpty()) {
             log.info("getUsers call: findAll");

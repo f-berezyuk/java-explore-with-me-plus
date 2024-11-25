@@ -5,8 +5,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 @Component
-
-public class PagebleBuilder {
+public class PageableBuilder {
     private static int getPageNumber(int from, int size) {
         return from / size;
     }

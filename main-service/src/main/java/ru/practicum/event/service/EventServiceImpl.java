@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.categories.service.CategoriesService;
 import ru.practicum.common.ConflictException;
 import ru.practicum.common.NotFoundException;
-import ru.practicum.common.PagebleBuilder;
+import ru.practicum.common.PageableBuilder;
 import ru.practicum.common.ValidationException;
 import ru.practicum.event.dto.*;
 import ru.practicum.event.mapper.EventMapper;
@@ -52,7 +52,7 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional(readOnly = true)
     public List<EventShortDto> getAllByUserId(Long userId, int from, int size) {
-        var pageable = PagebleBuilder.getPageable(from, size, "id");
+        var pageable = PageableBuilder.getPageable(from, size, "id");
         return eventRepository.findAllByUserId(userId, pageable).getContent().stream().map(mapper::toShortDto).toList();
     }
 
