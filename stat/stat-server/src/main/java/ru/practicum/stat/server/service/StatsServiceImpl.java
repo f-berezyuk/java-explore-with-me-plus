@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.stat.dto.EndpointHit;
 import ru.practicum.stat.dto.ViewStats;
 import ru.practicum.stat.server.error.ValidationException;
-import ru.practicum.stat.server.model.mapper.EndpointHitMapper;
+import ru.practicum.stat.server.mapper.EndpointHitMapper;
 import ru.practicum.stat.server.repository.EndpointHitEntityRepository;
 
 import java.time.LocalDateTime;
