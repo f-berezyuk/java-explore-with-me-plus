@@ -15,6 +15,7 @@ public interface RequestService {
 
     RequestDto createRequest(long userId, long eventId);
 
+    @SuppressWarnings("UnusedReturnValue")
     List<RequestDto> saveAll(List<RequestDto> requests);
 
     RequestDto cancelRequest(long userId, long requestId);

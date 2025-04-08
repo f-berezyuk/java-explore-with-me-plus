@@ -24,8 +24,9 @@ import ru.practicum.event.dto.UpdateEventUserRequest;
 import ru.practicum.event.service.EventService;
 import ru.practicum.request.dto.RequestDto;
 
-@RestController
+@SuppressWarnings("SpringOmittedPathVariableParameterInspection")
 @RequestMapping("/users/{userId}/events")
+@RestController
 @AllArgsConstructor
 public class PrivateEventController {
     private final EventService eventService;

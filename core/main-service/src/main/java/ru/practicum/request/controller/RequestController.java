@@ -34,6 +34,7 @@ public class RequestController {
         return requestService.createRequest(userId, eventId);
     }
 
+    @SuppressWarnings("SpringOmittedPathVariableParameterInspection")
     @PatchMapping("/{requestId}/cancel")
     RequestDto requestCancel(@PathVariable long requestId, @PathVariable long userId) {
         return requestService.cancelRequest(userId, requestId);

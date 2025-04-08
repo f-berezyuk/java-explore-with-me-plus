@@ -1,5 +1,6 @@
 package ru.practicum.config;
 
+import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
@@ -15,8 +16,10 @@ public class StatInterceptor implements HandlerInterceptor {
     private final StatService statService;
 
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler,
-                                Exception ex) throws Exception {
+    public void afterCompletion(HttpServletRequest request,
+                                @Nullable HttpServletResponse response,
+                                @Nullable Object handler,
+                                Exception ex) {
         statService.createStats(request.getRequestURI(), request.getRemoteAddr());
         log.info("process statistic for {}", request.getRequestURI());
     }
