@@ -1,0 +1,44 @@
+spring:
+  application:
+    name: main-service
+  #  config:
+  #    import: "configserver:"
+  #  cloud:
+  #    config:
+  #      fail-fast: true
+  #      retry:
+  #        useRandomPolicy: true
+  #        max-interval: 6000
+  #      discovery:
+
+  #        enabled: true
+
+  #        service-id: config-server
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://ewm-db:5432/ewm-db
+    username: ewmuser
+    password: ewmpass
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+  sql:
+    init:
+      mode: always
+
+server:
+  port: 0
+
+management:
+  server:
+    port: 0
+
+################
+
+eureka:
+  client:
+    service-url:
+      default-zone: http://${eureka.instance.hostname:localhost}:${eureka.instance.port:8761}/eureka/
