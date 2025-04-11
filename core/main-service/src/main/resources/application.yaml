@@ -1,33 +1,18 @@
+#file: noinspection SpringYamlInspection
 spring:
   application:
     name: main-service
-  #  config:
-  #    import: "configserver:"
-  #  cloud:
-  #    config:
-  #      fail-fast: true
-  #      retry:
-  #        useRandomPolicy: true
-  #        max-interval: 6000
-  #      discovery:
-
-  #        enabled: true
-
-  #        service-id: config-server
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://ewm-db:5432/ewm-db
-    username: ewmuser
-    password: ewmpass
-  jpa:
-    hibernate:
-      ddl-auto: none
-    properties:
-      hibernate:
-        format_sql: true
-  sql:
-    init:
-      mode: always
+    config:
+      import: "configserver:"
+    cloud:
+      config:
+        fail-fast: true
+        retry:
+          use-random-policy: true
+          max-interval: 6000
+        discovery:
+          enabled: true
+          service-id: config-server
 
 server:
   port: 0
@@ -35,8 +20,6 @@ server:
 management:
   server:
     port: 0
-
-################
 
 eureka:
   client:

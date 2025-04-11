@@ -6,8 +6,8 @@ import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.ewm.client.StatClient;
-import ru.practicum.stat.dto.EndpointHit;
+import ru.practicum.ewm.stat.client.StatClient;
+import ru.practicum.EWM.stat.dto.EndpointHit;
 
 @Service
 @RequiredArgsConstructor

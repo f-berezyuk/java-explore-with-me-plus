@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: config-server
+  profiles:
+    active: native
+  cloud:
+    config:
+      server:
+        native:
+          search-locations:
+            - classpath:config/core/{application}
+            - classpath:config/stat/{application}
+            - classpath:config/infra/{application}
+  eureka:
+    client:
+      service-url:
+        # noinspection SpringYamlInspection
+        default-zone: http://${eureka.instance.hostname:localhost}:${eureka.instance.port:8761}/eureka/
+
+server:
+  port: 8080
+
+management:
+  server:
+    port: 0
