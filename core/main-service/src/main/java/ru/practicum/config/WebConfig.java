@@ -12,11 +12,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @AllArgsConstructor
 @Slf4j
 public class WebConfig implements WebMvcConfigurer {
-    private StatInterceptor statInterceptor;
+    private StatsInterceptor statsInterceptor;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(statInterceptor)
+        registry.addInterceptor(statsInterceptor)
                 .addPathPatterns("/**");
         log.info("Register statistic interceptor.");
     }

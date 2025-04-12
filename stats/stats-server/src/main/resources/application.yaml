@@ -1,7 +1,7 @@
 #file: noinspection SpringYamlInspection
 spring:
   application:
-    name: main-service
+    name: stat-server
   config:
     import: "configserver:"
   cloud:

@@ -9,11 +9,12 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
+    <artifactId>stats</artifactId>
     <packaging>pom</packaging>
-    <artifactId>core</artifactId>
-
     <modules>
-        <module>main-service</module>
+        <module>stats-dto</module>
+        <module>stats-client</module>
+        <module>stats-server</module>
     </modules>
 
     <properties>
@@ -28,4 +29,5 @@
             <artifactId>spring-cloud-starter-config</artifactId>
         </dependency>
     </dependencies>
+
 </project>
