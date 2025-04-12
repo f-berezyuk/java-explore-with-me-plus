@@ -15,11 +15,7 @@ spring:
         service-id: config-server
 
 server:
-  port: 0
-
-management:
-  server:
-    port: 0
+  port: 9095
 
 eureka:
   client:

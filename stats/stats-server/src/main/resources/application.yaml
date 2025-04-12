@@ -1,27 +1,22 @@
-#file: noinspection SpringYamlInspection
 spring:
   application:
-    name: stat-server
+    name: stats-server
   config:
     import: "configserver:"
   cloud:
     config:
-      fail-fast: true
-      retry:
-        use-random-policy: true
-        max-interval: 6000
       discovery:
         enabled: true
         service-id: config-server
-
+      fail-fast: true
 server:
-  port: 0
-
-management:
-  server:
-    port: 0
-
+  port: 9090
 eureka:
   client:
     service-url:
-      default-zone: http://${eureka.instance.hostname:localhost}:${eureka.instance.port:8761}/eureka/
+      default-zone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    hostname: localhost
+    instance-id: "${spring.application.name}:${server.port}"
+    lease-renewal-interval-in-seconds: 10
